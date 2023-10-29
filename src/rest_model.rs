@@ -248,20 +248,20 @@ pub struct Transaction {
     pub order_id: u64,
     pub client_order_id: String,
     pub transact_time: u64,
-    #[serde(with = "string_or_float")]
-    pub price: f64,
-    #[serde(with = "string_or_float")]
-    pub orig_qty: f64,
-    #[serde(with = "string_or_float")]
-    pub executed_qty: f64,
-    #[serde(with = "string_or_float")]
-    pub cummulative_quote_qty: f64,
-    pub status: OrderStatus,
-    pub time_in_force: TimeInForce,
+    #[serde(default, with = "string_or_float_opt")]
+    pub price: Option<f64>,
+    #[serde(default, with = "string_or_float_opt")]
+    pub orig_qty: Option<f64>,
+    #[serde(default, with = "string_or_float_opt")]
+    pub executed_qty: Option<f64>,
+    #[serde(default, with = "string_or_float_opt")]
+    pub cummulative_quote_qty: Option<f64>,
+    pub status: Option<OrderStatus>,
+    pub time_in_force: Option<TimeInForce>,
     #[serde(rename = "type")]
-    pub order_type: OrderType,
-    pub side: OrderSide,
-    pub fills: Vec<Fill>,
+    pub order_type: Option<OrderType>,
+    pub side: Option<OrderSide>,
+    pub fills: Option<Vec<Fill>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

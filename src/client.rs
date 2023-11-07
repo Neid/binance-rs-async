@@ -13,7 +13,7 @@ use crate::errors::error_messages;
 use crate::errors::*;
 use crate::util::{build_request_p, build_signed_request_p};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Client {
     api_key: String,
     secret_key: String,
@@ -205,7 +205,22 @@ impl Client {
 
     async fn handler<T: de::DeserializeOwned>(&self, response: Response) -> Result<T> {
         match response.status() {
-            StatusCode::OK => Ok(response.json().await?),
+            StatusCode::OK => {
+                //Ok(response.json().await?)
+
+                let text = response.text().await?;
+                //println!("Content: {}", text);
+                //let result = response.json().await;
+                let result = serde_json::from_str::<T>(&text);
+                match result {
+                    Ok(r) => Ok(r),
+                    Err(e) => {
+                        //println!("Error: {}", e);
+                        //println!("Content: {}", text);
+                        Err(Error::Msg(format!("Error: {} Response: {}", e, text)))
+                    }
+                }
+            },
             StatusCode::INTERNAL_SERVER_ERROR => Err(Error::InternalServerError),
             StatusCode::SERVICE_UNAVAILABLE => Err(Error::ServiceUnavailable),
             StatusCode::UNAUTHORIZED => Err(Error::Unauthorized),

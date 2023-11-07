@@ -14,7 +14,7 @@ static API_V3_CANCEL_REPLACE: &str = "/api/v3/order/cancelReplace";
 static API_V3_ORDER_TEST: &str = "/api/v3/order/test";
 
 /// Account API access, full example provided in examples/binance_endpoints.rs
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Account {
     pub client: Client,
     pub recv_window: u64,

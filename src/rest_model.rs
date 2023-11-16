@@ -245,7 +245,7 @@ pub struct Fill {
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
     pub symbol: String,
-    pub order_id: u64,
+    pub order_id: i64,
     pub client_order_id: String,
     pub transact_time: u64,
     #[serde(default, with = "string_or_float_opt")]

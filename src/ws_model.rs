@@ -407,7 +407,7 @@ pub struct OrderUpdate {
     #[serde(rename = "r")]
     pub order_reject_reason: String,
     #[serde(rename = "i")]
-    pub order_id: u64,
+    pub order_id: i64,
     #[serde(rename = "l")]
     #[serde(with = "string_or_float")]
     pub qty_last_executed: f64,
@@ -427,7 +427,7 @@ pub struct OrderUpdate {
     #[serde(rename = "t")]
     pub trade_id: i64,
     #[serde(skip, rename = "I")]
-    pub i_ignore: u64,
+    pub i_ignore: i64,
     #[serde(rename = "w")]
     pub is_order_on_the_book: bool,
     #[serde(rename = "m")]
@@ -435,7 +435,7 @@ pub struct OrderUpdate {
     #[serde(skip, rename = "M")]
     pub m_ignore: bool,
     #[serde(rename = "O")]
-    pub order_creation_time: u64,
+    pub order_creation_time: i64,
     #[serde(rename = "Z")]
     #[serde(with = "string_or_float")]
     pub cumulative_quote_asset_transacted_qty: f64,

@@ -22,7 +22,7 @@ pub struct Account {
 
 /// Order Request
 /// perform an order for the account
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderRequest {
     pub symbol: String,

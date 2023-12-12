@@ -2,7 +2,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use thiserror::Error;
 
-#[derive(Debug, Deserialize, Error)]
+#[derive(Debug, Serialize, Deserialize, Error)]
 #[error("code: {code}, msg: {msg}")]
 pub struct BinanceContentError {
     pub code: i32,

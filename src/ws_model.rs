@@ -1,4 +1,5 @@
-use crate::rest_model::{string_or_float, Asks, Bids, OrderBook, OrderSide, OrderStatus, OrderType, TimeInForce};
+use crate::rest_model::{string_or_float, Asks, Bids, ExecutionType, OrderBook, OrderSide, OrderStatus, OrderType,
+                        TimeInForce};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "e")]
@@ -23,6 +24,8 @@ pub enum WebsocketEvent {
     OrderUpdate(Box<OrderUpdate>),
     #[serde(alias = "listStatus")]
     ListOrderUpdate(Box<OrderListUpdate>),
+    #[serde(alias = "markPriceUpdate")]
+    MarkPriceUpdate(Box<MarkPriceEvent>),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -266,6 +269,31 @@ pub struct BookTickerEvent {
     pub best_ask_qty: f64,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkPriceEvent {
+    #[serde(rename = "E")]
+    pub event_time: u64,
+
+    #[serde(rename = "s")]
+    pub symbol: String,
+
+    #[serde(rename = "p")]
+    pub mark_price: String,
+
+    #[serde(rename = "i")]
+    pub index_price: String,
+
+    #[serde(rename = "P")]
+    pub estimated_settle_price: String,
+
+    #[serde(rename = "r")]
+    pub funding_rate: String,
+
+    #[serde(rename = "T")]
+    pub next_funding_time: u64,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombinedStreamEvent<T> {
     stream: String,
@@ -401,7 +429,7 @@ pub struct OrderUpdate {
     #[serde(rename = "C")]
     pub origin_client_id: Option<String>,
     #[serde(rename = "x")]
-    pub execution_type: OrderStatus,
+    pub execution_type: ExecutionType,
     #[serde(rename = "X")]
     pub current_order_status: OrderStatus,
     #[serde(rename = "r")]

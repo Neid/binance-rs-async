@@ -509,9 +509,7 @@ pub enum OrderSide {
 
 /// By default, buy
 impl Default for OrderSide {
-    fn default() -> Self {
-        Self::Buy
-    }
+    fn default() -> Self { Self::Buy }
 }
 
 /// The allowed values are:
@@ -526,9 +524,7 @@ pub enum CancelReplaceMode {
 
 /// By default, STOP_ON_FAILURE
 impl Default for CancelReplaceMode {
-    fn default() -> Self {
-        Self::StopOnFailure
-    }
+    fn default() -> Self { Self::StopOnFailure }
 }
 
 /// Order types, the following restrictions apply
@@ -555,9 +551,7 @@ pub enum OrderType {
 
 /// By default, use market orders
 impl Default for OrderType {
-    fn default() -> Self {
-        Self::Market
-    }
+    fn default() -> Self { Self::Market }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -599,6 +593,7 @@ pub struct MarginOrderCancellation {
 #[serde(rename_all = "camelCase")]
 pub struct MarginOrderCancellationResult {
     pub symbol: String,
+    #[serde(with = "string_or_u64_opt")]
     pub order_id: Option<u64>,
     pub orig_client_order_id: Option<String>,
     pub client_order_id: Option<String>,
@@ -1102,6 +1097,7 @@ pub struct MarginOrderQuery {
 #[serde(rename_all = "camelCase")]
 pub struct MarginOrderResult {
     pub symbol: String,
+    #[serde(with = "string_or_u64")]
     pub order_id: u64,
     pub client_order_id: String,
     pub transact_time: u128,
@@ -1225,6 +1221,25 @@ pub enum SymbolPermission {
     Other,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ExecutionType {
+    /// The order has been accepted into the engine.
+    New,
+    /// The order has been canceled by the user.
+    Canceled,
+    /// Currently unused
+    Replaced,
+    /// The order has been rejected and was not processed (This message appears only with Cancel Replace Orders wherein the new order placement is rejected but the request to cancel request succeeds.)
+    Rejected,
+    /// Part of the order or all of the order's quantity has filled.
+    Trade,
+    /// The order was canceled according to the order type's rules (e.g. LIMIT FOK orders with no fill, LIMIT IOC or MARKET orders that partially fill) or by the exchange, (e.g. orders canceled during liquidation, orders canceled during maintenance).
+    Expired,
+    /// The order has expired due to STP trigger.
+    TradePrevention,
+}
+
 /// Status of an order, this can typically change over time
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Copy)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -1237,14 +1252,14 @@ pub enum OrderStatus {
     Filled,
     /// The order has been canceled by the user.
     Canceled,
-    /// (currently unused)
+    /// Currently unused
     PendingCancel,
     /// The order was not accepted by the engine and not processed.
     Rejected,
     /// The order was canceled according to the order type's rules (e.g. LIMIT FOK orders with no fill, LIMIT IOC or MARKET orders that partially fill) or by the exchange, (e.g. orders canceled during liquidation, orders canceled during maintenance)
     Expired,
-    /// Part of the order or all of the order's quantity has filled.
-    Trade,
+    /// The order was canceled by the exchange due to STP trigger. (e.g. an order with EXPIRE_TAKER will match with existing orders on the book with the same account or same tradeGroupId)
+    ExpiredInMatch,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
@@ -1950,6 +1965,19 @@ pub struct ApiKeyPermissions {
     trading_authority_expiration_time: Option<u64>,
 }
 
+pub type WalletBalances = Vec<WalletBalance>;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct WalletBalance {
+    /// Shows whether the wallet is activated or not
+    activate: bool,
+    /// Shows the overall balance of the wallet quoted in BTC
+    balance: String,
+    /// Indicates the wallet type: 'Spot', 'Funding', 'Cross Margin', 'Isolated Margin', 'USDⓈ-M Futures', 'COIN-M Futures', 'Earn', 'Options', 'Trading Bots'
+    wallet_name: String,
+}
+
 pub mod string_or_float {
     use std::fmt;
 
@@ -1984,7 +2012,7 @@ pub mod string_or_float {
 pub(crate) mod string_or_float_opt {
     use std::fmt;
 
-    use serde::{Deserialize, Deserializer, Serializer};
+    use serde::{Deserializer, Serializer};
 
     pub fn serialize<T, S>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -2001,13 +2029,6 @@ pub(crate) mod string_or_float_opt {
     where
         D: Deserializer<'de>,
     {
-        #[derive(Deserialize)]
-        #[serde(untagged)]
-        enum StringOrFloat {
-            String(String),
-            Float(f64),
-        }
-
         Ok(Some(crate::rest_model::string_or_float::deserialize(deserializer)?))
     }
 }
@@ -2039,6 +2060,40 @@ pub mod string_or_u64 {
         match StringOrU64::deserialize(deserializer)? {
             StringOrU64::String(s) => s.parse().map_err(de::Error::custom),
             StringOrU64::U64(i) => Ok(i),
+        }
+    }
+}
+
+pub mod string_or_u64_opt {
+    use std::fmt;
+
+    use serde::{de, Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<T, S>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: fmt::Display,
+        S: Serializer,
+    {
+        match value {
+            Some(v) => crate::rest_model::string_or_u64::serialize(v, serializer),
+            None => serializer.serialize_none(),
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum StringOrU64 {
+            String(String),
+            U64(u64),
+        }
+
+        match StringOrU64::deserialize(deserializer)? {
+            StringOrU64::String(s) => s.parse().map_err(de::Error::custom).map(Some),
+            StringOrU64::U64(i) => Ok(Some(i)),
         }
     }
 }

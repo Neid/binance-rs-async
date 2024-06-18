@@ -1,4 +1,4 @@
-pub static DATA_REST_ENDPOINT: &str = "https://data.binance.com";
+pub static DATA_REST_ENDPOINT: &str = "https://api.binance.com";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Config {
@@ -27,7 +27,7 @@ impl Config {
             .set_rest_api_endpoint("https://testnet.binance.vision")
             .set_ws_endpoint("wss://testnet.binance.vision")
             .set_futures_rest_api_endpoint("https://testnet.binancefuture.com")
-            .set_futures_ws_endpoint("wss://testnet.binancefuture.com")
+            .set_futures_ws_endpoint("wss://fstream.binancefuture.com")
     }
 
     /// Sets the rest api endpoint. Defaults to <https://api.binance.com>.

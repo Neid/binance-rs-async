@@ -63,7 +63,7 @@ pub fn partial_book_depth_stream(symbol: &str, levels: u16, update_speed: u16) -
 /// * `update_speed`: 1000 or 100
 pub fn diff_book_depth_stream(symbol: &str, update_speed: u16) -> String { format!("{symbol}@depth@{update_speed}ms") }
 
-fn combined_stream(streams: Vec<String>) -> String { streams.join("/") }
+fn combined_stream(streams: &Vec<String>) -> String { streams.join("/") }
 
 pub struct WebSockets<'a, WE> {
     pub socket: Option<(WebSocketStream<MaybeTlsStream<TcpStream>>, Response)>,
@@ -98,7 +98,7 @@ impl<'a, WE: serde::de::DeserializeOwned> WebSockets<'a, WE> {
 
     /// Connect to multiple websocket endpoints
     /// N.B: WE has to be CombinedStreamEvent
-    pub async fn connect_multiple(&mut self, endpoints: Vec<String>) -> Result<()> {
+    pub async fn connect_multiple(&mut self, endpoints: &Vec<String>) -> Result<()> {
         let mut url = Url::parse(&self.conf.ws_endpoint)?;
         url.path_segments_mut()
             .map_err(|_| Error::UrlParserError(url::ParseError::RelativeUrlWithoutBase))?

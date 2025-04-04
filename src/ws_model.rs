@@ -26,6 +26,8 @@ pub enum WebsocketEvent {
     ListOrderUpdate(Box<OrderListUpdate>),
     #[serde(alias = "markPriceUpdate")]
     MarkPriceUpdate(Box<MarkPriceEvent>),
+    #[serde(alias = "bookTicker")]
+    BookTicker(Box<BookTickerEvent>),
 }
 
 #[derive(Serialize, Deserialize, Debug)]

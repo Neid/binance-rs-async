@@ -271,10 +271,10 @@ pub struct BookTickerEvent {
     pub best_ask_qty: f64,
 
     #[serde(rename = "E")]
-    pub event_time: u64,
+    pub event_time: Option<u64>,
 
     #[serde(rename = "T")]
-    pub transaction_time: u64,
+    pub transaction_time: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

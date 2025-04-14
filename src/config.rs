@@ -4,9 +4,11 @@ pub static DATA_REST_ENDPOINT: &str = "https://api.binance.com";
 pub struct Config {
     pub rest_api_endpoint: String,
     pub ws_endpoint: String,
+    pub ws_api_endpoint: String,
 
     pub futures_rest_api_endpoint: String,
     pub futures_ws_endpoint: String,
+    pub futures_ws_api_endpoint: String,
 
     pub recv_window: u64,
 
@@ -163,9 +165,11 @@ impl Default for Config {
         Config {
             rest_api_endpoint: "https://api.binance.com".into(),
             ws_endpoint: "wss://stream.binance.com:9443".into(),
+            ws_api_endpoint: "wss://ws-api.binance.com:443/ws-api/v3".into(),
 
             futures_rest_api_endpoint: "https://fapi.binance.com".into(),
             futures_ws_endpoint: "wss://fstream.binance.com".into(),
+            futures_ws_api_endpoint: "wss://ws-fapi.binance.com/ws-fapi/v1".into(),
 
             recv_window: 5000,
             binance_us_api: false,

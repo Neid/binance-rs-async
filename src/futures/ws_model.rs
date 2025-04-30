@@ -166,7 +166,7 @@ pub struct Order {
     pub good_till_date: u64,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum PriceMatch {
     /// No price match

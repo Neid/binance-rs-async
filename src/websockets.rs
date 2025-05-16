@@ -124,6 +124,19 @@ impl<'a, WE: serde::de::DeserializeOwned> WebSockets<'a, WE> {
         self.handle_connect(url).await
     }
 
+    /// Connect to multiple websocket for futures endpoints
+    /// N.B: WE has to be CombinedStreamEvent
+    pub async fn connect_multiple_futures(&mut self, endpoints: &Vec<String>) -> Result<()> {
+        let mut url = Url::parse(&self.conf.futures_ws_endpoint)?;
+        url.path_segments_mut()
+            .map_err(|_| Error::UrlParserError(url::ParseError::RelativeUrlWithoutBase))?
+            .push(STREAM_ENDPOINT);
+        url.set_query(Some(&format!("streams={}", combined_stream(endpoints))));
+
+        self.handle_connect(url).await
+    }
+
+
     async fn handle_connect(&mut self, url: Url) -> Result<()> {
         match connect_async(url).await {
             Ok(answer) => {

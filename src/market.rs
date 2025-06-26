@@ -13,7 +13,7 @@ static API_V3_24H_TICKER: &str = "/api/v3/ticker/24hr";
 static API_V3_AGG_TRADES: &str = "/api/v3/aggTrades";
 static API_V3_KLINES: &str = "/api/v3/klines";
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Market {
     pub client: Client,
     pub recv_window: u64,

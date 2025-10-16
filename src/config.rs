@@ -1,4 +1,4 @@
-pub static DATA_REST_ENDPOINT: &str = "https://api.binance.com";
+pub static DATA_REST_ENDPOINT: &str = "https://api4.binance.com";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Config {
@@ -32,7 +32,7 @@ impl Config {
             .set_futures_ws_endpoint("wss://fstream.binancefuture.com")
     }
 
-    /// Sets the rest api endpoint. Defaults to <https://api.binance.com>.
+    /// Sets the rest api endpoint. Defaults to <https://api4.binance.com>.
     ///
     /// # Arguments
     ///
@@ -163,7 +163,7 @@ impl Default for Config {
     /// ```
     fn default() -> Config {
         Config {
-            rest_api_endpoint: "https://api.binance.com".into(),
+            rest_api_endpoint: "https://api4.binance.com".into(),
             ws_endpoint: "wss://stream.binance.com:9443".into(),
             ws_api_endpoint: "wss://ws-api.binance.com:443/ws-api/v3".into(),
 

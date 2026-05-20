@@ -92,7 +92,7 @@ impl Config {
         self
     }
 
-    /// Sets the futures websocket endpoint. Defaults to "wss://fstream.binance.com".
+    /// Sets the futures websocket endpoint. Defaults to "wss://fstream.binance.com/market".
     ///
     /// # Arguments
     ///
@@ -168,7 +168,17 @@ impl Default for Config {
             ws_api_endpoint: "wss://ws-api.binance.com:443/ws-api/v3".into(),
 
             futures_rest_api_endpoint: "https://fapi.binance.com".into(),
-            futures_ws_endpoint: "wss://fstream.binance.com".into(),
+            // USDS-M futures WS migration (effective 2026-04-23):
+            // legacy paths deliver only /public data; market-category
+            // streams (aggTrade, depth, bookTicker, etc.) require the
+            // /market base path.  Including it in the default endpoint
+            // means subsequent connect_futures / connect_multiple_futures
+            // calls produce wss://fstream.binance.com/market/ws/<stream>
+            // or wss://fstream.binance.com/market/stream?streams=A/B.
+            // User-data streams (orderUpdate, accountUpdate) require
+            // /private; configure that explicitly per-listenkey if needed.
+            // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams/Important-WebSocket-Change-Notice
+            futures_ws_endpoint: "wss://fstream.binance.com/market".into(),
             futures_ws_api_endpoint: "wss://ws-fapi.binance.com/ws-fapi/v1".into(),
 
             recv_window: 5000,
